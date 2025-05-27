@@ -1,0 +1,96 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model CategoriaEmpresa {
+  cemide  Int       @id @default(autoincrement())
+  cemdes  String
+  cemsta  String
+  empresa Empresa[]
+}
+
+model Empresa {
+  empide  Int              @id @default(autoincrement())
+  empcnp  String           @unique
+  empnom  String
+  empend  String
+  empcat  Int
+  catemp  CategoriaEmpresa @relation(fields: [empcat], references: [cemide])
+  empsta  String
+  usuario Usuario[]
+}
+
+model Perfil {
+  peride  Int       @id @default(autoincrement())
+  perdes  String
+  persta  String
+  usuario Usuario[]
+}
+
+model Departamento {
+  depide  Int       @id @default(autoincrement())
+  depdes  String
+  depsta  String
+  usuario Usuario[]
+}
+
+model Usuario {
+  usuide          Int                   @id @default(autoincrement())
+  usucra          Int
+  usunom          String
+  ususen          String
+  usuper          Int
+  perfil          Perfil                @relation(fields: [usuper], references: [peride])
+  usuemp          Int
+  empresa         Empresa               @relation(fields: [usuemp], references: [empide])
+  usudep          Int
+  departamento    Departamento          @relation(fields: [usudep], references: [depide])
+  ususta          String
+  ususup          Int?
+  supervisor      Usuario?              @relation("SupervisorColaborador", fields: [ususup], references: [usuide])
+  colaborador     Usuario[]             @relation("SupervisorColaborador")
+  solicitacao     SolicitacaoDispensa[] @relation("ParaColaboradores")
+  supervisionadas SolicitacaoDispensa[] @relation("ParaSupervisores")
+}
+
+model TipoDispensa {
+  tidide      Int                   @id @default(autoincrement())
+  tiddes      String
+  tidsta      String
+  solicitacao SolicitacaoDispensa[]
+}
+
+model ObservacaoSolicitacao {
+  obside      Int                 @id @default(autoincrement())
+  obscol      String?
+  obsges      String?
+  obssld      Int
+  solicitacao SolicitacaoDispensa @relation(fields: [obssld], references: [sodide])
+}
+
+model SolicitacaoDispensa {
+  sodide       Int                     @id @default(autoincrement())
+  sodusu       Int
+  usuario      Usuario                 @relation(name: "ParaColaboradores", fields: [sodusu], references: [usuide])
+  sodsup       Int
+  supervisor   Usuario                 @relation(name: "ParaSupervisores", fields: [sodsup], references: [usuide])
+  soddat       DateTime                @default(now())
+  sodtip       Int
+  tipodispensa TipoDispensa            @relation(fields: [sodtip], references: [tidide])
+  sodqtd       Int
+  soddti       DateTime
+  soddtt       DateTime
+  sodsta       String
+  observacao   ObservacaoSolicitacao[]
+}
