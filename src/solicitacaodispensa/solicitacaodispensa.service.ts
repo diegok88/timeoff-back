@@ -44,6 +44,52 @@ export class SolicitacaodispensaService {
     return this.mapToEntity(solicitacao);
   }
 
+  async countByStatus(): Promise<{ ativo: number; pendente: number; recusado: number }> {
+    try {
+      // Log para verificar os valores únicos de sodsta
+      const statusExistentes = await this.prisma.solicitacaoDispensa.groupBy({
+        by: ['sodsta'],
+        _count: { _all: true },
+      });
+      console.log('Status encontrados no banco:', statusExistentes);
+
+      const [ativo, pendente, recusado] = await Promise.all([
+        this.prisma.solicitacaoDispensa.count({
+          where: { sodsta: { equals: 'Ativo', mode: 'insensitive' } },
+        }),
+        this.prisma.solicitacaoDispensa.count({
+          where: { sodsta: { equals: 'Pendente', mode: 'insensitive' } },
+        }),
+        this.prisma.solicitacaoDispensa.count({
+          where: { sodsta: { equals: 'Recusado', mode: 'insensitive' } },
+        }),
+      ]);
+
+      return {
+        ativo,
+        pendente,
+        recusado,
+      };
+    } catch (error) {
+      console.error('Erro ao contar solicitações por status:', error);
+      throw new Error('Não foi possível contar as solicitações por status');
+    }
+  }
+
+  async findByUsuarioId(sodusu: number): Promise<Solicitacaodispensa[]> {
+  const solicitacoes = await this.prisma.solicitacaoDispensa.findMany({
+    where: {
+      sodusu: sodusu // Ou simplesmente: where: { sodusu }
+    }
+  });
+  
+  if (!solicitacoes || solicitacoes.length === 0) {
+    throw new NotFoundException(`Nenhuma solicitação encontrada para o usuário com ID ${sodusu}`);
+  }
+  
+  return solicitacoes.map(solicitacao => this.mapToEntity(solicitacao));
+}
+
   async update(sodide: number, updateSolicitacaodispensaDto: UpdateSolicitacaodispensaDto): Promise<Solicitacaodispensa> {
     const solicitacao = await this.prisma.solicitacaoDispensa.update({
       where: { sodide: sodide },
@@ -53,7 +99,7 @@ export class SolicitacaodispensaService {
   }
 
   async remove(sodide: number): Promise<Solicitacaodispensa> {
-     const solicitacao = await this.prisma.solicitacaoDispensa.delete({
+    const solicitacao = await this.prisma.solicitacaoDispensa.delete({
       where: { sodide: sodide }
     })
     return this.mapToEntity(solicitacao);
