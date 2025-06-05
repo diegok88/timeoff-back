@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException, NotFoundException, Query } from '@nestjs/common';
 import { SolicitacaodispensaService } from './solicitacaodispensa.service';
 import { CreateSolicitacaodispensaDto } from './dto/create-solicitacaodispensa.dto';
 import { UpdateSolicitacaodispensaDto } from './dto/update-solicitacaodispensa.dto';
@@ -14,8 +14,12 @@ export class SolicitacaodispensaController {
   }
 
   @Get('count-by-status')
-  async countByStatus(): Promise<{ ativo: number; pendente: number; recusado: number }> {
-    return this.solicitacaodispensaService.countByStatus();
+  async countByStatus(@Query('sodusu') sodusu: string): Promise<{ aceito: number; pendente: number; recusado: number }> {
+    const userId = parseInt(sodusu, 10); // Convert string to number
+    if (isNaN(userId)) {
+      throw new Error('Invalid sodusu parameter');
+    }
+    return this.solicitacaodispensaService.countByStatus(userId);
   }
 
   @Get('/usuario/:sodusu')

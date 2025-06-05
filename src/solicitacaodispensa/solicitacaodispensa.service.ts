@@ -19,6 +19,11 @@ export class SolicitacaodispensaService {
       soddti: solicitacao.soddti,
       soddtt: solicitacao.soddtt,
       sodsta: solicitacao.sodsta,
+      tipoDispensa: solicitacao.tipodispensa ? {
+      tidide: solicitacao.tipodispensa.tidide,
+      tiddes: solicitacao.tipodispensa.tiddes,
+      tidsta: solicitacao.tipodispensa.tidsta
+    } : undefined
     }
   }
 
@@ -44,34 +49,44 @@ export class SolicitacaodispensaService {
     return this.mapToEntity(solicitacao);
   }
 
-  async countByStatus(): Promise<{ ativo: number; pendente: number; recusado: number }> {
+ async countByStatus(sodusu: number): Promise<{ aceito: number; pendente: number; recusado: number }> {
     try {
-      // Log para verificar os valores únicos de sodsta
+      // Log para verificar os valores únicos de sodsta para o usuário
       const statusExistentes = await this.prisma.solicitacaoDispensa.groupBy({
         by: ['sodsta'],
+        where: { sodusu }, // Filter by sodusu
         _count: { _all: true },
       });
-      console.log('Status encontrados no banco:', statusExistentes);
+      console.log('Status encontrados no banco para sodusu', sodusu, ':', statusExistentes);
 
-      const [ativo, pendente, recusado] = await Promise.all([
+      const [aceito, pendente, recusado] = await Promise.all([
         this.prisma.solicitacaoDispensa.count({
-          where: { sodsta: { equals: 'Ativo', mode: 'insensitive' } },
+          where: {
+            sodusu, // Filter by sodusu
+            sodsta: { equals: 'Aceito', mode: 'insensitive' },
+          },
         }),
         this.prisma.solicitacaoDispensa.count({
-          where: { sodsta: { equals: 'Pendente', mode: 'insensitive' } },
+          where: {
+            sodusu, // Filter by sodusu
+            sodsta: { equals: 'Pendente', mode: 'insensitive' },
+          },
         }),
         this.prisma.solicitacaoDispensa.count({
-          where: { sodsta: { equals: 'Recusado', mode: 'insensitive' } },
+          where: {
+            sodusu, // Filter by sodusu
+            sodsta: { equals: 'Recusado', mode: 'insensitive' },
+          },
         }),
       ]);
 
       return {
-        ativo,
+        aceito,
         pendente,
         recusado,
       };
     } catch (error) {
-      console.error('Erro ao contar solicitações por status:', error);
+      console.error('Erro ao contar solicitações por status para sodusu', sodusu, ':', error);
       throw new Error('Não foi possível contar as solicitações por status');
     }
   }
@@ -79,7 +94,16 @@ export class SolicitacaodispensaService {
   async findByUsuarioId(sodusu: number): Promise<Solicitacaodispensa[]> {
   const solicitacoes = await this.prisma.solicitacaoDispensa.findMany({
     where: {
-      sodusu: sodusu // Ou simplesmente: where: { sodusu }
+      sodusu: sodusu 
+    },
+    include: {
+      tipodispensa: {
+        select: {
+          tidide: true,
+          tiddes: true,
+          tidsta: true
+        }
+      }
     }
   });
   

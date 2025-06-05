@@ -1,3 +1,5 @@
+import { Tipodispensa } from "src/tipodispensa/entities/tipodispensa.entity";
+
 export class Solicitacaodispensa {
     sodide: number;
     sodusu: number;
@@ -8,4 +10,5 @@ export class Solicitacaodispensa {
     soddti: Date;
     soddtt: Date
     sodsta: string;
+    tipoDispensa?: Tipodispensa;
 }
