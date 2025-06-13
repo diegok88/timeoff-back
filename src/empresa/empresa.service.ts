@@ -42,6 +42,16 @@ export class EmpresaService {
     return this.mapToEntity(empresa);
   }
 
+  async findByCnpj(empcnp: string): Promise<Empresa> {
+    const empresa = await this.prisma.empresa.findUnique({
+      where: { empcnp }
+    })
+    if (!empresa) {
+      throw new NotFoundException(`Empresa com ID ${empcnp} não foi encntrado`)
+    }
+    return this.mapToEntity(empresa)
+  }
+
   async update(empide: number, updateEmpresaDto: UpdateEmpresaDto): Promise<Empresa> {
     const empresa = await this.prisma.empresa.update({
       where: { empide: empide },

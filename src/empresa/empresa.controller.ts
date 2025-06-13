@@ -1,11 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException } from '@nestjs/common';
 import { EmpresaService } from './empresa.service';
 import { CreateEmpresaDto } from './dto/create-empresa.dto';
 import { UpdateEmpresaDto } from './dto/update-empresa.dto';
+import { Empresa } from '@prisma/client';
 
 @Controller('empresa')
 export class EmpresaController {
-  constructor(private readonly empresaService: EmpresaService) {}
+  constructor(private readonly empresaService: EmpresaService) { }
 
   @Post()
   create(@Body() createEmpresaDto: CreateEmpresaDto) {
@@ -20,6 +21,11 @@ export class EmpresaController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.empresaService.findOne(+id);
+  }
+
+  @Get('cnpj/:cnpj')
+  async findByCnpj(@Param('cnpj') cnpj: string): Promise<Empresa> {
+    return this.empresaService.findByCnpj(cnpj);
   }
 
   @Patch(':id')

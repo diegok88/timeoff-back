@@ -1,8 +1,8 @@
 import { IsNumber, IsString, Length, Matches, MinLength } from "class-validator";
 
 export class CreateEmpresaDto {
-    @Matches(/^[\d.\/-]+$/, { message: 'O CNPJ deve conter apenas números e os caracteres . / -' })
-    @Length(18, 18, { message: 'O campo deve conter 18 caracteres' })
+    @Matches(/^\d+$/, { message: 'O CNPJ deve conter apenas números (sem pontos, barra ou hífen).' })
+    @Length(14, 14, { message: 'O campo deve conter 18 caracteres' })
     @IsString()
     empcnp: string;
     @MinLength(3, { message: 'O campo deve conter no minimo 3 caracteres' })
