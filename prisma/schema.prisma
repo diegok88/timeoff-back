@@ -52,8 +52,8 @@ model Usuario {
   ususen          String
   usuper          Int
   perfil          Perfil                @relation(fields: [usuper], references: [peride])
-  usuemp          Int
-  empresa         Empresa               @relation(fields: [usuemp], references: [empide])
+  usuemp          Int?
+  empresa         Empresa?               @relation(fields: [usuemp], references: [empide])
   usudep          Int
   departamento    Departamento          @relation(fields: [usudep], references: [depide])
   ususta          String

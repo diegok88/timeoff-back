@@ -1,3 +1,5 @@
+import { CategoriaEmpresa } from "@prisma/client";
+
 export class Empresa {
     empide: number;
     empcnp: string;
@@ -5,4 +7,5 @@ export class Empresa {
     empend: string;
     empcat: number;
     empsta: string;
+    categoriaEmpresa?: CategoriaEmpresa;
 }

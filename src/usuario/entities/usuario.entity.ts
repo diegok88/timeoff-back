@@ -4,7 +4,7 @@ export class Usuario {
     usunom: string;
     ususen: string;
     usuper: number;
-    usuemp: number;
+    usuemp: number | null;
     usudep: number;
     ususup?: number;
     ususta: string;

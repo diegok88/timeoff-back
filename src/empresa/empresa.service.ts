@@ -17,6 +17,11 @@ export class EmpresaService {
       empend: empresa.empend,
       empcat: empresa.empcat,
       empsta: empresa.empsta,
+      categoriaEmpresa: empresa.catemp ? {
+        cemide: empresa.catemp.cemide,
+        cemdes: empresa.catemp.cemdes,
+        cemsta: empresa.catemp.cemsta,
+      } : undefined,
     }
   }
 
@@ -34,7 +39,16 @@ export class EmpresaService {
 
   async findOne(empide: number): Promise<Empresa> {
     const empresa = await this.prisma.empresa.findUnique({
-      where: { empide }
+      where: { empide },
+      include: {
+        catemp: {
+          select: {
+            cemide: true,
+            cemdes: true,
+            cemsta: true,
+          }
+        }
+      }
     })
     if (!empresa) {
       throw new NotFoundException(`Empresa com ID ${empide} não foi encntrado`)
