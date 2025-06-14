@@ -40,11 +40,6 @@ export class SolicitacaodispensaController {
     return this.solicitacaodispensaService.findOne(+id);
   }
 
-  /* @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.solicitacaodispensaService.findOne(+id);
-  } */
-
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateSolicitacaodispensaDto: UpdateSolicitacaodispensaDto) {
     return this.solicitacaodispensaService.update(+id, updateSolicitacaodispensaDto);

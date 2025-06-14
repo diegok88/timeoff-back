@@ -45,6 +45,15 @@ export class UsuarioService {
     return this.mapToEntity(usuario);
   }
 
+  async findBySupervisor(usuper: number): Promise<Usuario[]> {
+    const usuario = await this.prisma.usuario.findMany({
+      where: {
+        usuper: usuper
+      },
+    })
+    return usuario.map((usuario) => this.mapToEntity(usuario));
+  }
+
   async update(usuide: number, updateUsuarioDto: UpdateUsuarioDto) {
     const usuario = await this.prisma.usuario.update({
       where: { usuide: usuide },

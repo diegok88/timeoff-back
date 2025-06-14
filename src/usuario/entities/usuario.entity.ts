@@ -6,6 +6,6 @@ export class Usuario {
     usuper: number;
     usuemp: number | null;
     usudep: number;
-    ususup?: number;
+    ususup: number | null;
     ususta: string;
 }

@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { UsuarioService } from './usuario.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
+import { Usuario } from '@prisma/client';
 
 @Controller('usuario')
 export class UsuarioController {
@@ -21,6 +22,12 @@ export class UsuarioController {
   findOne(@Param('id') id: string) {
     return this.usuarioService.findOne(+id);
   }
+
+  @Get('/super/:ususup')
+  async findBySupervisor(@Param('ususup') ususup: number): Promise<Usuario[]> {
+    return this.usuarioService.findBySupervisor(+ususup)
+  }
+  
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUsuarioDto: UpdateUsuarioDto) {
